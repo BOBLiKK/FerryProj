@@ -15,9 +15,9 @@ import static ehu.java.constant.MessageConstant.*;
 
 public class FerryService {
     private static FerryService instance;
-    private static final Lock instanceLock = new ReentrantLock(); // Блокировка Singleton
+    private static final Lock instanceLock = new ReentrantLock();
     private final Ferry ferry;
-    private final Lock ferryLock = new ReentrantLock(); // Блокировка для работы с паромом
+    private final Lock ferryLock = new ReentrantLock();
     private final QueueService queueService;
 
     private static final Logger logger = LogManager.getLogger(FerryService.class);
@@ -50,20 +50,32 @@ public class FerryService {
                     logger.info(FERRY_TRAVEL_MESSAGE);
                 } else {
                     ferry.setCurrentState(FerryState.LOADING);
-                    Vehicle vehicle = queueService.pollVehicle();
-                    if (vehicle == null) {
+                    boolean ferryIsNotEmpty = false;
+
+                    while (!queueService.isEmpty()) {
+                        Vehicle vehicle = queueService.pollVehicle();
+                        if (vehicle == null) {
+                            break;
+                        }
+
+                        if (canBoard(vehicle)) {
+                            logger.info(vehicle + ON_BOARD);
+                            loadVehicle(vehicle);
+                            ferryIsNotEmpty = true;
+                        } else {
+                            queueService.addVehicleBack(vehicle);
+                            break;
+                        }
+                    }
+
+                    if (!ferryIsNotEmpty) {
                         emptyIterations++;
                         logger.info(EMPTY_QUEUE_MESSAGE + (MAX_EMPTY_ITERATIONS - emptyIterations));
                         TimeUnit.MILLISECONDS.sleep(500);
-                        continue;
-                    }
-
-                    emptyIterations = 0;
-                    if (canBoard(vehicle)) {
-                        loadVehicle(vehicle);
                     } else {
                         depart();
                     }
+
                 }
             } catch (InterruptedException e) {
                 Thread.currentThread().interrupt();

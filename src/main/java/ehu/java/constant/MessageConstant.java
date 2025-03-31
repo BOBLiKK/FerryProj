@@ -9,6 +9,6 @@ public class MessageConstant {
     public static final String EMPTY_QUEUE_MESSAGE = "Queue is empty. Empty iterations left till shut down: ";
     public static final String FERRY_TRAVEL_MESSAGE = "⛴️ Ferry on the way, cars are waiting...";
     public static final String VEHICLE_ARRIVED_MESSAGE = " Arrived and joined the queue.";
-    public static final String FERRY_READY_FOR_LOADING = "Ferry is ready for loading";
+    public static final String ON_BOARD = " on board. ";
 }
 

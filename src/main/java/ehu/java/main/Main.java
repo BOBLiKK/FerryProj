@@ -16,17 +16,12 @@ public class Main {
         FerryService ferryService = FerryService.getInstance(queueService);
         ExecutorService vehicleExecutor = Executors.newFixedThreadPool(NUMBER_OF_THREADS);
 
-        //todo шаблон State
-        //todo double check the result with requirements
-
         List<Vehicle> vehicles = VehicleFileReaderUtil.readVehiclesFromFile(VEHICLES_FILE, queueService);
 
         for (Vehicle vehicle : vehicles) {
             vehicleExecutor.submit(vehicle);
         }
-
         new Thread(ferryService::loadAllVehicles).start();
-
         vehicleExecutor.shutdown();
     }
 }

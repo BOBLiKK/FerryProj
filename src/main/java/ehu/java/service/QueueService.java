@@ -26,6 +26,19 @@ public class QueueService {
             lock.unlock();
         }
     }
+
+    public void addVehicleBack(Vehicle vehicle) {
+        lock.lock();
+        try {
+            ((LinkedList<Vehicle>) waitingQueue).addFirst(vehicle);
+        } finally {
+            lock.unlock();
+        }
+    }
+
+    public boolean isEmpty() {
+        return waitingQueue.isEmpty();
+    }
 }
 
 
