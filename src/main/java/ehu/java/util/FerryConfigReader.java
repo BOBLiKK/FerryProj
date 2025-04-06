@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import static ehu.java.constant.ErrorMessageConstant.*;
 
 public class FerryConfigReader {
     private static final Logger logger = LogManager.getLogger(FerryConfigReader.class);
@@ -14,20 +13,20 @@ public class FerryConfigReader {
     public static int[] readFerryConfig(String fileName) {
         InputStream inputStream = FerryConfigReader.class.getClassLoader().getResourceAsStream(fileName);
         if (inputStream == null) {
-            logger.error(FILE_NOT_FOUND);
+            logger.error("File not found. ");
             throw new RuntimeException(fileName);
         }
 
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream))) {
             String line = reader.readLine();
             if (line == null) {
-                logger.error(FILE_IS_EMPTY);
+                logger.error("File is empty");
                 throw new RuntimeException(fileName);
             }
 
             String[] parts = line.split("\\s+");
             if (parts.length != 2) {
-                logger.error(INVALID_FILE_FORMAT);
+                logger.error("Invalid file format.");
                 throw new IllegalArgumentException(fileName);
             }
 
@@ -36,7 +35,7 @@ public class FerryConfigReader {
 
             return new int[]{maxWeight, maxSpace};
         } catch (IOException e) {
-            logger.error(ERROR_READING_FILE);
+            logger.error("Error reading file.");
             throw new RuntimeException(fileName, e);
         }
     }

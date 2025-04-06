@@ -1,37 +1,25 @@
 package ehu.java.entity;
 
-import ehu.java.service.QueueService;
+import ehu.java.service.VehicleService;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import java.util.Random;
 import java.util.concurrent.Callable;
 import java.util.concurrent.TimeUnit;
 
-import static ehu.java.constant.MessageConstant.*;
 
-public abstract class Vehicle implements Callable<Boolean> {
-    protected final int space;
-    protected final int weight;
-    private final QueueService queueService;
-
+public class Vehicle implements Callable<Boolean> {
     private static final Logger logger = LogManager.getLogger(Vehicle.class);
+    private final VehicleType vehicleType;
+    private final int space;
+    private final int weight;
+    private final VehicleService vehicleService;
 
-    public Vehicle(int space, int weight, QueueService queueService) {
+    public Vehicle(String type, int space, int weight, VehicleService vehicleService) {
+        this.vehicleType = VehicleType.valueOf(type);
         this.space = space;
         this.weight = weight;
-        this.queueService = queueService;
-    }
-
-    @Override
-    public Boolean call() {
-        try {
-            TimeUnit.MILLISECONDS.sleep((long) (Math.random() * 1000));
-            logger.info(this + VEHICLE_ARRIVED_MESSAGE);
-            queueService.addVehicle(this);
-        } catch (InterruptedException e) {
-            Thread.currentThread().interrupt();
-            return false;
-        }
-        return true;
+        this.vehicleService = vehicleService;
     }
 
     public int getSpace() {
@@ -44,6 +32,20 @@ public abstract class Vehicle implements Callable<Boolean> {
 
     @Override
     public String toString() {
-        return getClass().getSimpleName() + " (Weight: " + weight + " kg, Space: " + space + " sqm )";
+        return  vehicleType + " weight: " + weight + " kg " + " space: " + space + " sqm)";
+    }
+
+    @Override
+    public Boolean call()  {
+        try {
+            Random random = new Random();
+            TimeUnit.MILLISECONDS.sleep(random.nextInt(1000));
+            logger.info(vehicleType + " arrived for boarding.");
+            return vehicleService.getOnBoard(this);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error("Vehicle  boarding interrupted!");
+            return false;
+        }
     }
 }

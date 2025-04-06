@@ -1,6 +1,6 @@
 package ehu.java.entity;
 
-public class Ferry {
+public class Ferry  {
     private final int maxWeight;
     private final int maxSpace;
     private int currentWeight = 0;
@@ -52,6 +52,10 @@ public class Ferry {
 
     public void incrementNumberOfVehiclesOnBoard() {
         this.numberOfVehiclesOnBoard++;
+    }
+
+    public boolean isEmpty() {
+        return numberOfVehiclesOnBoard == 0;
     }
 
     public void clearFerryStorage(){
